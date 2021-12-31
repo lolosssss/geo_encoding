@@ -5,7 +5,7 @@ const count = ref(0);
 </script>
 
 <template>
-  <h1>Under construction</h1>
+  <h1 class="text-3xl font-bold underline">Under construction</h1>
 </template>
 
 <style scoped>
