@@ -7,7 +7,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@danmarshall/deckgl-typings": "^4.9.13",
     "@deck.gl/aggregation-layers": "^8.6.5",
     "@deck.gl/core": "^8.6.5",
     "@deck.gl/extensions": "^8.6.5",
