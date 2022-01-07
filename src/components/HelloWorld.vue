@@ -2,13 +2,14 @@
 import { ref, defineComponent } from 'vue';
 import { Deck } from '@deck.gl/core';
 import { BitmapLayer } from '@deck.gl/layers';
-import { S2Layer, TileLayer } from '@deck.gl/geo-layers';
+import { S2Layer, TileLayer, H3ClusterLayer } from '@deck.gl/geo-layers';
 import ConfigView from './ConfigView.vue';
 
 export default {
   setup() {
     return {
       deck: null,
+      tileLayer: null,
       viewState: ref({
         // 西湖区
         longitude: 120.142116,
@@ -24,10 +25,10 @@ export default {
   },
   methods: {
     initMap() {
-      const tilelayer = new TileLayer({
+      this.tileLayer = new TileLayer({
         data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
         minZoom: 0,
-        maxZoom: 26,
+        maxZoom: 19,
         tileSize: 256,
         renderSubLayers: (props) => {
           const {
@@ -46,7 +47,31 @@ export default {
         height: '100%',
         initialViewState: this.viewState,
         controller: true,
-        layers: [tilelayer],
+        layers: [this.tileLayer],
+      });
+    },
+    updateLayer(ev) {
+      console.log(ev);
+      let layer;
+      if (ev.selected === 0) {
+        return;
+      } else if (ev.selected === 1) {
+        layer = new S2Layer({
+          id: 's2-layer',
+          data: ev.tokens.split(','),
+          pickable: true,
+          wireframe: false,
+          lineWidthMaxPixels: 1,
+          filled: true,
+          extruded: false,
+          getS2Token: (d) => d,
+          getFillColor: [255, 0, 0, 125],
+        });
+      } else if (ev.selected === 2) {
+        layer = new H3ClusterLayer({});
+      }
+      this.deck.setProps({
+        layers: [this.tileLayer, layer],
       });
     },
   },
@@ -59,7 +84,7 @@ export default {
 <template>
   <div>
     <canvas id="map-container" class="fixed inset-0"></canvas>
-    <ConfigView class="h-full w-1/5 absolute top-0 right-0" />
+    <ConfigView class="h-1/6 w-1/6 absolute left-0 bottom-0" @load="updateLayer" />
   </div>
 </template>
 
